@@ -1,79 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cognizant</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-        }
-        form {
-            max-width: 300px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        </style>
-</head>
-
-<body>
-    <form action="login" method="post">
-        <label for="username:"></label>
-        username:
-        <input type="text" id="username" name="username">
-        <br>
-
-        <label for="password:"></label>
-        password:
-        <input type="password" id="password" name="password">
-        <br>    
-
-        <input type="submit" value="Login">
-    </form>
-
-</body>
-
-<script>
-    document.querySelector('form').addEventListener('submit', function(event) {
-        var username = document.getElementById('username').value;
-        var password = document.getElementById('password').value;
-
-        if (!username || !password) {
-            alert('Both fields are required!');
-            event.preventDefault(); 
-        }
-    });
-</script>
-
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,6 +11,11 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background: #222;
+      color: #eee;
     }
     header {
       background: #0077cc;
@@ -124,6 +53,10 @@
       padding: 10px;
       width: 200px;
       text-align: center;
+      transition: transform 0.3s;
+    }
+    .box.animated {
+      transform: scale(1.1) rotate(-3deg);
     }
     form input, form select {
       display: block;
@@ -140,6 +73,35 @@
     }
     button:hover {
       background: #005fa3;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .form-feedback {
+      color: red;
+      font-size: 0.95em;
+      margin-bottom: 10px;
+    }
+    .submitted-data {
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      max-width: 300px;
+    }
+    body.dark-mode .submitted-data {
+      background: #333;
+      color: #eee;
+      border-color: #555;
     }
   </style>
 </head>
@@ -161,6 +123,7 @@
   <section id="form">
     <h2>Form Example</h2>
     <form id="demoForm">
+      <div class="form-feedback" id="formFeedback"></div>
       <label for="username">Name:</label>
       <input type="text" id="username" name="username" required>
 
@@ -175,6 +138,7 @@
 
       <button type="submit">Submit</button>
     </form>
+    <div class="submitted-data" id="submittedData" style="display:none;"></div>
   </section>
 
   <!-- HTML5 Media Tags -->
@@ -184,6 +148,11 @@
       <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
+    <br>
+    <audio controls>
+      <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
   </section>
 
   <!-- JavaScript Example -->
@@ -193,9 +162,16 @@
     <button id="changeBtn">Change Box</button>
   </section>
 
+  <button class="theme-toggle" id="themeBtn">Toggle Theme</button>
+
   <script>
     // --- JavaScript Control Flow, Functions, DOM, Arrays, Events ---
-    
+
+    // Theme Toggle
+    document.getElementById("themeBtn").addEventListener("click", function() {
+      document.body.classList.toggle("dark-mode");
+    });
+
     // Array Example
     const colors = ["red", "green", "blue", "orange"];
 
@@ -214,15 +190,44 @@
       // DOM Manipulation
       box.style.backgroundColor = colors[randomIndex];
       box.style.color = "white";
+
+      // Animation
+      box.classList.add("animated");
+      setTimeout(() => box.classList.remove("animated"), 300);
     }
 
     // Event Handling
     document.getElementById("changeBtn").addEventListener("click", changeBox);
 
-    // Form Event Example
+    // Form Event Example with Validation Feedback & Show Data
     document.getElementById("demoForm").addEventListener("submit", function(event) {
       event.preventDefault(); // Prevent actual submit
-      alert("Form Submitted! Hello " + document.getElementById("username").value);
+      const username = document.getElementById("username").value.trim();
+      const age = document.getElementById("age").value;
+      const gender = document.getElementById("gender").value;
+      const feedback = document.getElementById("formFeedback");
+      const submittedData = document.getElementById("submittedData");
+
+      feedback.textContent = "";
+      submittedData.style.display = "none";
+
+      if (!username) {
+        feedback.textContent = "Name is required!";
+        return;
+      }
+      if (!age || age < 1 || age > 100) {
+        feedback.textContent = "Please enter a valid age (1-100).";
+        return;
+      }
+
+      feedback.textContent = "";
+      submittedData.innerHTML = `
+        <strong>Submitted Data:</strong><br>
+        Name: ${username}<br>
+        Age: ${age}<br>
+        Gender: ${gender.charAt(0).toUpperCase() + gender.slice(1)}
+      `;
+      submittedData.style.display = "block";
     });
   </script>
 </body>
